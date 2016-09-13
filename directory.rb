@@ -5,10 +5,13 @@
 def input_students
  students = []
  puts "Whats is the students name?"
- villian = gets.chomp
+ villian = gets.strip
 
  puts "What cohort are they part of?"
- month = gets.capitalize.chomp
+ month = gets.capitalize.strip
+
+ puts "Would you like to add more information?"
+ answer = gets.downcase.strip
 
   while !villian.empty? || !month.empty? do
     if
@@ -17,23 +20,44 @@ def input_students
     else
       cohort = :May
     end
-
     if villian == ""
       name = @default_name
     else
       name = villian.capitalize
     end
+    if answer == "yes"
+      puts "Do they have a hobby?"
+      hobby = gets.chomp.capitalize
 
-    students << {name: name, cohort: cohort}
+      puts "How all are they in cms?"
+      height = gets.chomp
+
+      puts "What is there country of birth?"
+      birth = gets.chomp.capitalize
+    else
+      hobby = "N/A"
+      height = "N/A"
+      birth  = "N/A"
+    end
+
+    students << {name: name, cohort: cohort, height: height, hobby: hobby,
+                 birth: birth,}
       if students.count == 1
          puts "Now we have #{students.count} student"
       else
         puts "Now we have #{students.count} students"
       end
-      puts "Enter another student or hit return twice to quit"
+      puts "Enter another student or type 'quit' to exit"
       villian = gets.chomp
+       if villian.downcase == 'quit'
+         break
+       end
       puts "And what cohort are they part of"
       month = gets.capitalize.chomp
+
+      puts "Would you like to add more information?"
+      answer = gets.downcase.strip
+
  end
  students
 end
