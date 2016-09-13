@@ -1,32 +1,43 @@
+@months = [:January, :Febuary, :March, :April, :May, :June, :July, :August,
+          :September, :October, :November, :December]
+@default_name = "Anon"
+
 def input_students
-  puts "Please enter the name of the student"
-  puts "To finish, hit return twice"
-  students = []
-  name   = gets.capitalize.strip
-    if name == ""
-       name = "Annonymous"
+ students = []
+ puts "Whats is the students name?"
+ villian = gets.chomp
+
+ puts "What cohort are they part of?"
+ month = gets.capitalize.chomp
+
+  while !villian.empty? || !month.empty? do
+    if
+      @months.include?(month.to_sym)
+      cohort = month
+    else
+      cohort = :May
     end
 
-  puts "And what cohort are they part of"
-  cohort = gets.capitalize.strip
-    if cohort == ""
-       cohort = "Unknown"
+    if villian == ""
+      name = @default_name
+    else
+      name = villian.capitalize
     end
 
-    while !name.empty? || !cohort.empty? do
-        students << {name: name, cohort: cohort.to_sym}
-            if students.count == 1
-               puts "Now we have #{students.count} student"
-            else
-              puts "Now we have #{students.count} students"
-            end
-     puts "Enter another student or hit return twice to quit"
-     name = gets.capitalize.strip
-     puts "And what cohort are they part of"
-     cohort = gets.capitalize.strip
-    end
-  students
+    students << {name: name, cohort: cohort}
+      if students.count == 1
+         puts "Now we have #{students.count} student"
+      else
+        puts "Now we have #{students.count} students"
+      end
+      puts "Enter another student or hit return twice to quit"
+      villian = gets.chomp
+      puts "And what cohort are they part of"
+      month = gets.capitalize.chomp
+ end
+ students
 end
+
 
 def print_header
   puts "The students of Villians Academy"
@@ -39,7 +50,8 @@ def print_(students)
      puts "#{index+1}. #{student[:name]} (#{student[:cohort]} cohort)"
      puts ""
   end
- end
+end
+
 
 def select_students(students)
   puts "Students with names starting with 'J'"
@@ -67,5 +79,5 @@ students = input_students
 print_header
 print_(students)
 print_footer(students)
-select_students(students)
-select_student_length(students)
+#select_students(students)
+#select_student_length(students)
