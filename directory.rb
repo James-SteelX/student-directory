@@ -8,6 +8,27 @@ def intro
   puts ""
 end
 
+def interactive_menu
+  students = []
+  loop do
+    puts "1. Input Students"
+    puts "2. Show students"
+    puts "9. Exit"
+    selection = gets.chomp
+    case selection
+    when "1"
+      students = input_students
+    when "2"
+      intro
+      print_(students)
+      print_footer(students)
+    when "9"
+      exit
+    else
+      puts "I don't know what you meant, try again"
+    end
+  end
+end
 
 def input_students
  students = []
@@ -54,7 +75,7 @@ def input_students
       else
         puts "Now we have #{students.count} students".center(20)
       end
-      puts "Enter another student or type 'quit' to exit".center(20)
+      puts "Enter another student or type 'quit' to return to the menu".center(20)
       villian = gets.chomp
        if villian == 'quit'
          break
@@ -110,10 +131,10 @@ def print_footer(students)
    puts ""
 end
 
-intro
-students = input_students
-print_(students)
-print_footer(students)
-students_by_cohort(students)
+interactive_menu
+#intro
+#students = input_students
+#print_(students)
+#students_by_cohort(students)
 #select_students(students)
 #select_student_length(students)
