@@ -5,6 +5,7 @@
 @default_cohort = :May
 @filename = "students.csv"
 
+
 def intro
   puts "Welcome to Villian Academy student enrolement"
   puts "---------------------------------------------"
@@ -130,16 +131,29 @@ def print_students_list
 end
 
 def save_students
-  puts "Saved to #{@filename}."
-  file = File.open(@filename, "w")
-  #iterates over the array of students
-  @students.each do |student|
-    student_data = [student[:name], student[:cohort], student[:height],
-                    student[:hobby], student[:birth]]
-    csv_line = student_data.join(",")
-    file.puts csv_line
+  puts "Type 'yes' if you wish to use a file other than #{@filename} or just hit return"
+  response = gets.chomp.downcase
+  if response == 'yes'
+    puts "What file would you like to use?"
+    new_file = gets.chomp
+    puts "Saved to #{new_file}\n\n"
+    @file = File.open(new_file, "w")
+    save_array
+  else
+    puts "Saved to #{@filename}.\n\n"
+    @file = File.open(@filename, "w")
+    save_array
   end
- file.close
+ @file.close
+end
+
+def save_array
+  @students.each do |student|
+  student_data = [student[:name], student[:cohort], student[:height],
+                  student[:hobby], student[:birth]]
+  csv_line = student_data.join(",")
+  @file.puts csv_line
+ end
 end
 
 def try_load_students
@@ -147,8 +161,9 @@ def try_load_students
      @filename = ARGV.first
    end
    if File.exists?(@filename)
-     load_students
-     puts "Loaded #{@students.count} from #{@filename}"
+     @load_file = File.open(@filename, "r")
+     load_array
+     puts "Loaded #{@students.count} students from #{@filename}"
    else
      puts "Sorry, #{@filename} doesn't exist."
      exit #quits the program
@@ -156,22 +171,40 @@ def try_load_students
 end
 
 def load_students
-  puts "Loaded #{@filename}."
-  file = File.open(@filename, "r")
-  file.readlines.each do |line|
+  puts "Type 'yes' if you wish to load a file other than #{@filename} or just hit return"
+  response = gets.chomp.downcase
+  if response == 'yes'
+   puts "What file would you like to load"
+   new_load = gets.chomp
+    if !File.exists?(new_load)
+      puts "File doesnt exist, reverting to #{@filename}\n\n"
+      new_load = @filename
+    end
+    puts "Loaded #{new_load}\n\n"
+   @load_file = File.open(new_load, "r")
+   load_array
+ else
+   puts "Loaded #{@filename}.\n\n"
+   @load_file = File.open(@filename, "r")
+   load_array
+  end
+  @load_file.close
+end
+
+def load_array
+  @load_file.readlines.each do |line|
   @name, @cohort, @height, @hobby, @birth = line.chomp.split(',')
    add_students
-  end
-  file.close
+ end
 end
 
 def print_footer
   if @students.count <= 0
-    puts ""
+   puts "We currently have no students\n\n"
   elsif @students.count == 1
-   puts "Overall, we have #{@students.count} great student".center(20)
+   puts "Overall, we have #{@students.count} great student\n\n".center(20)
   else
-   puts "Overall, we have #{@students.count} great students".center(20)
+   puts "Overall, we have #{@students.count} great students\n\n".center(20)
   end
    puts ""
 end
@@ -193,9 +226,3 @@ end
 
 try_load_students
 interactive_menu
-#intro
-#students = input_students
-#print_(students)
-#students_by_cohort(students)
-#select_students(students)
-#select_student_length(students)
