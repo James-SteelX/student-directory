@@ -1,7 +1,10 @@
+@students = []
 @months = [:January, :Febuary, :March, :April, :May, :June, :July, :August,
           :September, :October, :November, :December]
-@default_name = "Anon"
-@students = []
+@default_name = "John Doe" #easier to change defaults from outside of the main code.
+@default_cohort = :May
+@filename = "students.csv"
+
 def intro
   puts "Welcome to Villian Academy student enrolement"
   puts "---------------------------------------------"
@@ -33,9 +36,10 @@ def process(selection)
   when "4"
     load_students
   when "9"
+    puts "Thankyou"
     exit
   else
-    puts "I don't know what you meant, try again"
+    puts "That is not a valid command"
   end
 end
 
@@ -47,15 +51,13 @@ def interactive_menu
 end
 
 def input_students
+   #removed the while loop and replaced with quit command, seems less clumsy.
    questions
-   while !@villian.empty? || !@month.empty? do
    checks
-   @students << {name: @name, cohort: @cohort, height: @height, hobby: @hobby,
-                 birth: @birth,}
-    student_counter
-    questions
-   end
- @students
+   add_students
+   student_counter
+   questions
+   @students
 end
 
 def questions
@@ -74,13 +76,13 @@ def questions
 
  if answer == "yes"
   puts "Do they have a hobby?".center(20)
-  hobby = STDIN.gets.chomp.capitalize
+  @hobby = STDIN.gets.chomp.capitalize
 
   puts "How all are they in cms?".center(20)
-  height = STDIN.gets.chomp
+  @height = STDIN.gets.chomp
 
   puts "What is there country of birth?".center(20)
-  birth = STDIN.gets.chomp.capitalize
+  @birth = STDIN.gets.chomp.capitalize
  else
   @hobby = "N/A"
   @height = "N/A"
@@ -88,12 +90,17 @@ def questions
   end
 end
 
+def add_students
+  @students << {name: @name, cohort: @cohort, height: @height, hobby: @hobby,
+                birth: @birth,}
+end
+
 def checks
   if
     @months.include?(@month.to_sym)
     @cohort = @month
   else
-    @cohort = :May
+    @cohort = @default_cohort
   end
   if @villian == ""
     @name = @default_name
@@ -108,7 +115,6 @@ def student_counter
   else
     puts "Now we have #{@students.count} students".center(20)
   end
-
 end
 
 def print_students_list
@@ -117,18 +123,19 @@ def print_students_list
      else
        puts "Enrolled Students"
        @students.each_with_index do |student, index|
-       puts ""
        puts "#{index+1}. #{student[:name]} (#{student[:cohort]} cohort)".center(20)
        puts "---------------------------".center(20)
       end
-   end
+    end
 end
 
 def save_students
-  file = File.open("students.csv", "w")
+  puts "Saved to #{@filename}."
+  file = File.open(@filename, "w")
   #iterates over the array of students
   @students.each do |student|
-    student_data = [student[:name], student[:cohort]]
+    student_data = [student[:name], student[:cohort], student[:height],
+                    student[:hobby], student[:birth]]
     csv_line = student_data.join(",")
     file.puts csv_line
   end
@@ -136,40 +143,26 @@ def save_students
 end
 
 def try_load_students
-   filename = ARGV.first #first argument from the command line
-   return if filename.nil? #get out of method if nothing is given
-   if File.exists?(filename)
-    load_students(filename)
-     puts "Loaded #{@students.count} from #{filename}"
+   unless ARGV.first.nil?
+     @filename = ARGV.first
+   end
+   if File.exists?(@filename)
+     load_students
+     puts "Loaded #{@students.count} from #{@filename}"
    else
-     puts "Sorry, #{filename} doesn't exist."
+     puts "Sorry, #{@filename} doesn't exist."
      exit #quits the program
    end
 end
 
-def load_students(filename = "students.csv")
-  file = File.open(filename, "r")
+def load_students
+  puts "Loaded #{@filename}."
+  file = File.open(@filename, "r")
   file.readlines.each do |line|
-  name, cohort = line.chomp.split(',')
-   @students << {name: name, cohort: cohort.to_sym}
+  @name, @cohort, @height, @hobby, @birth = line.chomp.split(',')
+   add_students
   end
   file.close
-end
-
-def students_by_cohort(students)
-  puts students.select { |cohort| cohort[:cohort] == :June  }
-end
-
-def select_students(students)
-  puts "Students with names starting with 'J'"
-  puts students.select {|name| name[:name].include?("J") }
-  puts ""
-end
-
-def select_student_length(students)
-  puts "Students with names less than 12 characters"
-  puts students.select { |name| name[:name].length < 13 }
-  puts ""
 end
 
 def print_footer
@@ -182,7 +175,23 @@ def print_footer
   end
    puts ""
 end
+#not working yet
+#def students_by_cohort(students)
+#  puts students.select { |cohort| cohort[:cohort] == :June  }
+#end
+#works
+#def select_students(students)
+#  puts "Students with names starting with 'J'"
+#  puts students.select {|name| name[:name].include?("J") }
+#end
+#works
+#def select_student_length(students)
+  #puts "Students with names less than 12 characters"
+  #puts students.select { |name| name[:name].length < 13 }
+  #puts ""
+#end
 
+try_load_students
 interactive_menu
 #intro
 #students = input_students
