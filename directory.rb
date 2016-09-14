@@ -209,21 +209,25 @@ def print_footer
   end
    puts ""
 end
-#not working yet
-#def students_by_cohort(students)
-#  puts students.select { |cohort| cohort[:cohort] == :June  }
-#end
+
 #works
-#def select_students(students)
-#  puts "Students with names starting with 'J'"
-#  puts students.select {|name| name[:name].include?("J") }
-#end
+def students_by_cohort(students)
+ cohort_select = students.select { |cohort|  cohort[:cohort][1].to_s }
+ cohort_select.select { |n| puts n[:name]  if n[:cohort] == 'October' }
+end
 #works
-#def select_student_length(students)
-  #puts "Students with names less than 12 characters"
-  #puts students.select { |name| name[:name].length < 13 }
-  #puts ""
-#end
+def select_students(students)
+  puts "Students with names starting with 'J'"
+  selected_names = students.select {|name| name[:name].include?("J") }
+  selected_names.each { |x| puts x[:name]}
+end
+#works
+def select_student_length(students)
+  puts "Students with names less than 12 characters"
+  selected = students.select { |name| name[:name][0].length < 13 }
+  selected.each { |x| puts x[:name]}
+  puts ""
+end
 
 try_load_students
 interactive_menu
