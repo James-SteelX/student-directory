@@ -1,10 +1,10 @@
+require 'CSV'
 @students = []
 @months = [:January, :Febuary, :March, :April, :May, :June, :July, :August,
           :September, :October, :November, :December]
 @default_name = "John Doe" #easier to change defaults from outside of the main code.
 @default_cohort = :May
 @filename = "students.csv"
-
 
 def intro
   puts "Welcome to Villian Academy student enrolement"
@@ -131,38 +131,38 @@ def print_students_list
 end
 
 def save_students
+  #gives user options to save to same file or a new file.
   puts "Type 'yes' if you wish to use a file other than #{@filename} or just hit return"
-  response = gets.chomp.downcase
+  response = STDIN.gets.chomp.downcase
   if response == 'yes'
-    puts "What file would you like to use?"
-    new_file = gets.chomp
+    puts "What file would you like to use? (please include .csv)"
+    new_file = STDIN.gets.chomp
     puts "Saved to #{new_file}\n\n"
-    @file = File.open(new_file, "w")
-    save_array
+    save_array(new_file)
   else
     puts "Saved to #{@filename}.\n\n"
-    @file = File.open(@filename, "w")
-    save_array
+    save_array(@filename)
   end
- @file.close
 end
 
-def save_array
+def save_array(file_name)
+  CSV.open(file_name, 'wb') do |add|
   @students.each do |student|
-  student_data = [student[:name], student[:cohort], student[:height],
-                  student[:hobby], student[:birth]]
-  csv_line = student_data.join(",")
-  @file.puts csv_line
+  add << [student[:name], student[:cohort], student[:height],
+        student[:hobby], student[:birth]]
+  end
  end
 end
 
 def try_load_students
+  #if no file is provided, loads students.csv
+  #exits program if file doesn't exist.
    unless ARGV.first.nil?
      @filename = ARGV.first
    end
    if File.exists?(@filename)
      @load_file = File.open(@filename, "r")
-     load_array
+     load_array(@filename)
      puts "Loaded #{@students.count} students from #{@filename}"
    else
      puts "Sorry, #{@filename} doesn't exist."
@@ -171,30 +171,31 @@ def try_load_students
 end
 
 def load_students
+  #asks user if they want to load different file, if file doesnt exist it reverts to default.
+  #if it exists it loads the file.
   puts "Type 'yes' if you wish to load a file other than #{@filename} or just hit return"
-  response = gets.chomp.downcase
+  response = STDIN.gets.chomp.downcase
   if response == 'yes'
    puts "What file would you like to load"
-   new_load = gets.chomp
+   new_load = STDIN.gets.chomp
     if !File.exists?(new_load)
       puts "File doesnt exist, reverting to #{@filename}\n\n"
       new_load = @filename
     end
     puts "Loaded #{new_load}\n\n"
-   @load_file = File.open(new_load, "r")
-   load_array
+   load_array(new_load)
  else
    puts "Loaded #{@filename}.\n\n"
-   @load_file = File.open(@filename, "r")
-   load_array
+   load_array(@filename)
   end
-  @load_file.close
 end
 
-def load_array
-  @load_file.readlines.each do |line|
-  @name, @cohort, @height, @hobby, @birth = line.chomp.split(',')
-   add_students
+def load_array(load_file_name)
+  #keeping the load function seperate cleans up load_students
+  #adding arguments allows me to offer different file name with same piece of code
+  CSV.foreach(load_file_name) do |line|
+    @name, @cohort, @height, @hobby, @birth = line
+    add_students
  end
 end
 
@@ -202,9 +203,9 @@ def print_footer
   if @students.count <= 0
    puts "We currently have no students\n\n"
   elsif @students.count == 1
-   puts "Overall, we have #{@students.count} great student\n\n".center(20)
+   puts "Overall, we have #{@students.count} great student\n\n"
   else
-   puts "Overall, we have #{@students.count} great students\n\n".center(20)
+   puts "Overall, we have #{@students.count} great students\n\n"
   end
    puts ""
 end
