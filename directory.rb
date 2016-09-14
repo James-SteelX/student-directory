@@ -1,37 +1,47 @@
 @months = [:January, :Febuary, :March, :April, :May, :June, :July, :August,
           :September, :October, :November, :December]
 @default_name = "Anon"
-
+@students = []
 def intro
   puts "Welcome to Villian Academy student enrolement"
   puts "---------------------------------------------"
   puts ""
 end
 
+def print_menu
+  puts "1. Input Students"
+  puts "2. Show students"
+  puts "9. Exit"
+end
+
+def show_students
+  intro
+  print_students_list
+  print_footer
+end
+
+def process(selection)
+  case selection
+  when "1"
+    students = input_students
+  when "2"
+    show_students
+  when "9"
+    exit
+  else
+    puts "I don't know what you meant, try again"
+  end
+end
+
 def interactive_menu
-  students = []
   loop do
-    puts "1. Input Students"
-    puts "2. Show students"
-    puts "9. Exit"
-    selection = gets.chomp
-    case selection
-    when "1"
-      students = input_students
-    when "2"
-      intro
-      print_(students)
-      print_footer(students)
-    when "9"
-      exit
-    else
-      puts "I don't know what you meant, try again"
-    end
+    print_menu
+    process(gets.chomp)
   end
 end
 
 def input_students
- students = []
+ students = @students
  puts "Whats is the students name?".center(20)
  villian = gets.strip
 
@@ -91,12 +101,12 @@ def input_students
 end
 
 
-def print_(students)
-     if students.count <= 0
+def print_students_list
+     if @students.count <= 0
        puts "There are currently no enrolled students"
      else
        puts "Enrolled Students"
-       students.each_with_index do |student, index|
+       @students.each_with_index do |student, index|
        puts ""
        puts "#{index+1}. #{student[:name]} (#{student[:cohort]} cohort)".center(20)
        puts "---------------------------".center(20)
@@ -120,13 +130,13 @@ def select_student_length(students)
   puts ""
 end
 
-def print_footer(students)
-  if students.count <= 0
+def print_footer
+  if @students.count <= 0
     puts ""
-  elsif students.count == 1
-   puts "Overall, we have #{students.count} great student".center(20)
+  elsif @students.count == 1
+   puts "Overall, we have #{@students.count} great student".center(20)
   else
-   puts "Overall, we have #{students.count} great students".center(20)
+   puts "Overall, we have #{@students.count} great students".center(20)
   end
    puts ""
 end
